@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Labirint</title>
+    <script src="scripts/hand.minified-1.2.js"></script>
+    <script src="scripts/babylon.js"></script>
+    <script src="scripts/mapa.js"></script>
+    <script src="scripts/gradnik.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            min-height: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+
+        #wrapper{
+            position:relative;
+            height: 100%;
+        }
+
+        #overlayCanvas {
+            width: 300px;
+            height: 300px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 1;
+        }
+
+        #menuCanvas{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 0;
+        }
+
+        #wrapper{position:relative;}
+    </style>
+</head>
+<body>
+    <div id=wrapper>
+        <canvas id="menuCanvas"></canvas>
+        <canvas id="renderCanvas"></canvas>
+        <canvas id="overlayCanvas"></canvas>
+    </div>
+    <img id="menu_main" src="textures/ui/menu/main1.gif" style="display: none;" />
+    <input id="mapInput" type="file" visibility="hidden"/>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
