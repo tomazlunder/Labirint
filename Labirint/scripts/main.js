@@ -18,9 +18,11 @@ var menu = true; //TRUE - in menu, FALSE - in game
 var menu_number = 0; //0 - Main menu
 var debuglayer = false;
 var paused = false;
+var check_e = false;
+var end = false;
+
 
 var selectedmap = "./mape/mapa1.txt";
-
 
 //2D Canvas - MENU
 
@@ -35,6 +37,7 @@ var yellow = "#fff71e";
 var violet = "#961eff";
 
 var main_menu_img = document.getElementById("menu_main");
+var key_img = document.getElementById("key_texture");
 
 //2D canvas init
 menucanvas = document.getElementById('menuCanvas');
@@ -62,6 +65,7 @@ mainMenu();
 function mainMenu() {
     menu = true;
     menu_number = 0;
+
     canvas.style.display = 'none';
     overlaycanvas.style.display = 'none';
     menucanvas.style.display = 'inline';
@@ -84,6 +88,9 @@ function mainMenu() {
 function startBabylonJS() {
     if (BABYLON.Engine.isSupported()) {
         var time = 0;
+        var iskey = false; //Obstaja kljuc?
+        var haskey = false; //Igralec ima kljuc?
+        var usedkey = false;
 
         menucanvas.style.display = 'none';
         canvas.style.display = 'inline';
@@ -120,11 +127,18 @@ function startBabylonJS() {
         camera.speed = 1;
         camera.inertia = 0.8;
         camera.angularSensibility = 1000;
+
+        camera.layerMask = 2;
+
         scene.activeCamera = camera;
+        
 
         //Mapa
         //var map = new Mapa("./mape/mapa1.txt");
         map = new Mapa(selectedmap);
+
+        //Key manager
+        var spriteManagerKey = new BABYLON.SpriteManager("keyManager", "textures/key_sprite/key_sprite.png", 1, 64, scene);
 
 
         setInterval(function () {
@@ -133,7 +147,7 @@ function startBabylonJS() {
         
         var lasttime;
 
-        //RENDER-LOOP
+        //RENDER-LOOP -----------------------------------------------------------------------------------------
         // Once the scene is loaded, just register a render loop to render it
         var wait = 50;
         engine.runRenderLoop(function () {
@@ -142,6 +156,24 @@ function startBabylonJS() {
             context2.fillText("TIME:", 30, 20);
             context2.fillText(Math.round(time).toString(), 80, 20);
 
+            if (check_e && haskey && !usedkey) {
+                if (map.door !== null) {
+                    if (Math.sqrt(Math.pow((map.door.mesh.position.x + 1.5 - camera.position.x), 2) + Math.pow((map.door.mesh.position.z + 1.5 - camera.position.z), 2)) < 2.7) {
+                        //HAS KEY, DOOR is not open
+                        usedkey = true;
+                        haskey = false;
+                    }
+                }
+                check_e = false;
+            }
+
+            if (haskey && !usedkey) {
+                context2.drawImage(key_img, 100, 50, 80, 40);
+            }
+
+            if (usedkey && map.door.mesh.position.y > -3) {
+                map.door.mesh.position.y -= 0.1;
+            }
 
 
 
@@ -151,18 +183,49 @@ function startBabylonJS() {
             //Počaka (wait) frame-ov, da se vse stvari inicializirajo
             if (wait > 0) { wait--; }
             else {
+                //Ce map.key obstaja in v svetu se ni kljuca
+                if (map.key !== null & !iskey) {
+                    var key = new BABYLON.Sprite("key", spriteManagerKey);
+                    key.position.x = map.key[0] * 3 + 1.5;
+                    key.position.z = map.key[1] * 3 + 1.5;
+                    key.position.y = 1;
+                    key.playAnimation(0, 9, true, 100);
+                    iskey = true;
+                }
+
+                //Ce kljuc obstaja, ni pobran
+                if (iskey & !haskey) {
+                    var player_co = getCameraXZ();
+                    if (player_co[0] == map.key[0] & player_co[1] == map.key[1]) {
+                        haskey = true;
+                        spriteManagerKey.dispose();
+                    }
+                }
+
                 //END block se vrti
                 map.end.mesh.rotation.y += 0.1;
+
                 //Ce je igralec na koncu
                 var player_co = getCameraXZ();
                 if (player_co[0] == map.end.posX && player_co[1] == map.end.posY) {
                     BABYLON.Tools.Log("KONEC");
+                    end = true;
                     engine.stopRenderLoop();
-                    mainMenu();
+                    context2.clearRect(0, 0, canvas.width, canvas.height);
+                    context2.fillStyle = grey;
+                    context2.fillRect(0, 0, canvas.width, 80);
+                    context2.fillStyle = red;
+                    context2.fillText("BRAVISIMO!", 30, 20);
+                    context2.fillStyle = black;
+                    context2.fillText("FINAL TIME:", 30, 40);
+                    context2.fillText(Math.round(time).toString() + "s", 150, 40);
+                    context2.fillText("ESC to MainMenu", 30, 60);
+
                 }
             }
-
         });
+        //END RENDER LOOP -------------------------------------------------------------------------------------------------
+
 
         //Helper function - returns the [x,z] of tile player (camera) is in;
         //Used in render loop
@@ -199,6 +262,8 @@ document.addEventListener("click", function (evt) {
 
             }
         }
+    } else {
+        canvas.requestPointerLock();
     }
 });
 
@@ -212,6 +277,10 @@ function handleKeyDown(evt) {
         if (evt.keyCode == "67") { //C - noclip (for testing)
             BABYLON.Tools.Log("C detected");
             changeCamera();
+        }
+        if (evt.keyCode == "69") { //E - for opening doors
+            BABYLON.Tools.Log("E detected");
+            check_e = true;
         }
     } else { //Only if in menu
         BABYLON.Tools.Log("C detected x");

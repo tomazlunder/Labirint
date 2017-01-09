@@ -8,6 +8,7 @@ function Gradnik(tip, posX, posY) {
     this.mat = new BABYLON.StandardMaterial("mat" + this.ime, scene);
     this.sirina = 3;
     this.mesh;
+
     if (tip == 1) {
         var g = new BABYLON.Mesh.CreateBox("zid" + this.ime, this.sirina, scene);
         g.position = new BABYLON.Vector3(this.sirina / 2 + this.posX * this.sirina, this.sirina / 2, this.sirina / 2 + this.posY * this.sirina);
@@ -47,6 +48,7 @@ function Gradnik(tip, posX, posY) {
         startMaterial.diffuseColor = new BABYLON.Color3(0, 0, 1);
         startMaterial.specularColor = new BABYLON.Color3(0, 0, 1);
 
+
         g.material = startMaterial;
 
         //camera.position = startpoint;
@@ -56,8 +58,8 @@ function Gradnik(tip, posX, posY) {
     //END POINT
     if (tip == 5) {
         var g = new BABYLON.Mesh.CreateBox("end", this.sirina, scene);
-        g.scaling = new BABYLON.Vector3(0.5, 2, 0.5);
-        g.position = new BABYLON.Vector3(this.sirina / 2 + this.posX * this.sirina, (this.sirina * 0.1) / 2, this.sirina / 2 + this.posY * this.sirina);
+        g.scaling = new BABYLON.Vector3(0.5, 8, 0.5);
+        g.position = new BABYLON.Vector3(this.sirina / 2 + this.posX * this.sirina, (8) / 2, this.sirina / 2 + this.posY * this.sirina);
         camera.position = new BABYLON.Vector3(this.sirina / 2 + this.posX * this.sirina, 3, this.sirina / 2 + this.posY * this.sirina);
 
         g.checkCollisions = false;
@@ -66,12 +68,27 @@ function Gradnik(tip, posX, posY) {
         var endMaterial = new BABYLON.StandardMaterial("start", scene);
         endMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
         endMaterial.specularColor = new BABYLON.Color3(1, 0, 0);
+        endMaterial.alpha = 0.8;
 
         g.material = endMaterial;
         this.mesh = g;
     }
-    /*
-    toStart = function () {
-        camera.position = startpoint;
-    }*/
+    
+
+    if (tip == 7) {//VRATA
+        var g = new BABYLON.Mesh.CreateBox("door", this.sirina, scene);
+        g.position = new BABYLON.Vector3(this.sirina / 2 + this.posX * this.sirina, this.sirina / 2, this.sirina / 2 + this.posY * this.sirina);
+        g.checkCollisions = true;
+
+        var doorMaterial = new BABYLON.StandardMaterial("doorMaterial", scene);
+        //doorMaterial.emissiveColor = new BABYLON.Color3(0.545, 0.271, 0.075);
+        //doorMaterial.specularColor = new BABYLON.Color3(0.545, 0.271, 0.075);
+        doorMaterial.emissiveTexture = new BABYLON.Texture("textures/door.jpg", scene);
+        doorMaterial.specularTexture = new BABYLON.Texture("textures/door-normal.png", scene);
+        doorMaterial.bumpTexture = new BABYLON.Texture("textures/door-displacement.png", scene);
+
+        g.material = doorMaterial;
+        g.scaling = new BABYLON.Vector3(1, 1.8, 1);
+        this.mesh = g;
+    }
 }

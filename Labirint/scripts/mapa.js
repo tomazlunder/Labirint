@@ -9,6 +9,8 @@ function Mapa(filePath) {
     this.visina;
     this.startpoint;
     this.end;
+    this.door = null;
+    this.key = null;
 
     loadFileX = function() {
         this.reader.open('GET', this.txt);
@@ -31,19 +33,26 @@ function Mapa(filePath) {
                     this.sirina = line.length;
                     prva = false;
                 }
-
-                gradnik = new Gradnik(parseInt(line[el]), el, l);
-                if (parseInt(line[el]) == 3) {
-                    this.startpoint = new BABYLON.Vector3((3 / 2) + (el * 3), 3, (3 / 2) + (l * 3));
-                    camera.position = this.startpoint;
+                if (parseInt(line[el]) == 6) { //KLJUC
+                    this.key = [el, l];
+                } else {
+                    gradnik = new Gradnik(parseInt(line[el]), el, l);
+                    if (parseInt(line[el]) == 3) {
+                        this.startpoint = new BABYLON.Vector3((3 / 2) + (el * 3), 3, (3 / 2) + (l * 3));
+                        camera.position = this.startpoint;
+                    }
+                    if (parseInt(line[el]) == 5) {
+                        this.end = gradnik;
+                        BABYLON.Tools.Log("End dodeljen");
+                    }
+                    if (parseInt(line[el]) == 7) {
+                        this.door = gradnik;
+                        BABYLON.Tools.Log("Door dodeljen");
+                    }
+                    elementi.push(gradnik);
                 }
-                if (parseInt(line[el]) == 5) {
-                    this.end = gradnik;
-                    BABYLON.Tools.Log("End dodeljen");
-                }
-                elementi.push(gradnik);
+                this.map.push(elementi);
             }
-            this.map.push(elementi);
         }
         BABYLON.Tools.Log("v: " + this.visina);
         BABYLON.Tools.Log("s: " + this.sirina);
