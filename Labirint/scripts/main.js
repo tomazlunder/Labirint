@@ -223,11 +223,11 @@ function startBabylonJS() {
                     context2.fillStyle = grey;
                     context2.fillRect(0, 0, canvas.width, 80);
                     context2.fillStyle = red;
-                    context2.fillText("BRAVISIMO!", 30, 20);
+                    context2.fillText("Congratulations!", 30, 20);
                     context2.fillStyle = black;
                     context2.fillText("FINAL TIME:", 30, 40);
                     context2.fillText(Math.round(time).toString() + "s", 150, 40);
-                    context2.fillText("ESC to MainMenu", 30, 60);
+                    context2.fillText("Click ESC two times", 30, 60);
 
                 }
             }
