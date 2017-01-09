@@ -23,6 +23,7 @@ var end = false;
 var map_init = false;
 var map_parse = false;
 var music;
+var key_laugh;
 
 
 var selectedmap = "./mape/mapa1.txt";
@@ -162,6 +163,13 @@ function startBabylonJS() {
                  // Sound has been downloaded & decoded
              }
             );
+        var win_sound = new BABYLON.Sound("DoorSound", "sounds/tada.wav", scene,
+             function () {
+                 // Sound has been downloaded & decoded
+             }
+            );
+        key_laugh = new BABYLON.Sound("Haha", "sounds/laugh.wav", scene, null, { loop: true, autoplay: true });
+        key_laugh.setVolume(0);
         
 
         //RENDER-LOOP -----------------------------------------------------------------------------------------
@@ -216,11 +224,19 @@ function startBabylonJS() {
                 }
 
                 //Ce kljuc obstaja, ni pobran
-                if (iskey & !haskey) {
+                if (iskey && !haskey && !usedkey) {
                     var player_co = getCameraXZ();
+                    var dist = Math.sqrt(Math.pow(player_co[0] - map.key[0], 2) + Math.pow(player_co[1] - map.key[1], 2));
+                    if (dist < 6) {
+                        key_laugh.setVolume(1 - dist / 6);
+                    } else {
+                        key_laugh.setVolume(0);
+                    }
+
                     if (player_co[0] == map.key[0] & player_co[1] == map.key[1]) {
                         haskey = true;
                         spriteManagerKey.dispose();
+                        key_laugh.stop();
                     }
                 }
 
@@ -234,6 +250,7 @@ function startBabylonJS() {
                     music.stop();
                     end = true;
                     engine.stopRenderLoop();
+                    win_sound.play();
                     context2.clearRect(0, 0, canvas.width, canvas.height);
                     context2.fillStyle = grey;
                     context2.fillRect(0, 0, canvas.width, 80);
@@ -317,6 +334,7 @@ function handleKeyDown(evt) {
         if (!menu) {
             engine.stopRenderLoop();
             music.stop();
+            key_laugh.stop();
             mainMenu();
         }
 
