@@ -157,11 +157,13 @@ function startBabylonJS() {
             context2.fillText(Math.round(time).toString(), 80, 20);
 
             if (check_e && haskey && !usedkey) {
+                //BABYLON.Tools.Log(Math.sqrt(Math.pow((map.door.mesh.position.x - camera.position.x), 2) + Math.pow((map.door.mesh.position.z - camera.position.z), 2)));
                 if (map.door !== null) {
-                    if (Math.sqrt(Math.pow((map.door.mesh.position.x + 1.5 - camera.position.x), 2) + Math.pow((map.door.mesh.position.z + 1.5 - camera.position.z), 2)) < 2.7) {
+                    if (Math.sqrt(Math.pow((map.door.mesh.position.x - camera.position.x), 2) + Math.pow((map.door.mesh.position.z - camera.position.z), 2)) < 4) {
                         //HAS KEY, DOOR is not open
                         usedkey = true;
                         haskey = false;
+                        BABYLON.Tools.Log("aaaaaand Opeeeen");;
                     }
                 }
                 check_e = false;
