@@ -20,6 +20,8 @@ var debuglayer = false;
 var paused = false;
 var check_e = false;
 var end = false;
+var map_init = false;
+var map_parse = false;
 
 
 var selectedmap = "./mape/mapa1.txt";
@@ -91,6 +93,8 @@ function startBabylonJS() {
         var iskey = false; //Obstaja kljuc?
         var haskey = false; //Igralec ima kljuc?
         var usedkey = false;
+        map_init = false;
+        map_parse = false;
 
         menucanvas.style.display = 'none';
         canvas.style.display = 'inline';
@@ -149,7 +153,7 @@ function startBabylonJS() {
 
         //RENDER-LOOP -----------------------------------------------------------------------------------------
         // Once the scene is loaded, just register a render loop to render it
-        var wait = 50;
+        var wait = 100;
         engine.runRenderLoop(function () {
             //IZRIS OVERLAYA
             context2.clearRect(0, 0, canvas.width, canvas.height);
@@ -183,8 +187,10 @@ function startBabylonJS() {
             scene.render();
 
             //Počaka (wait) frame-ov, da se vse stvari inicializirajo
-            if (wait > 0) { wait--; }
-            else {
+            //if (wait > 0) { wait--; }
+            
+            //else {
+            if (map_init && map_parse && map.end !== 'undefined' && typeof map.end !== 'undefined') {
                 //Ce map.key obstaja in v svetu se ni kljuca
                 if (map.key !== null & !iskey) {
                     var key = new BABYLON.Sprite("key", spriteManagerKey);

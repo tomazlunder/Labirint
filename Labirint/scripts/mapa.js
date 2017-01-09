@@ -53,6 +53,7 @@ function Mapa(filePath) {
                 }
                 this.map.push(elementi);
             }
+            map_parse= true;
         }
         BABYLON.Tools.Log("v: " + this.visina);
         BABYLON.Tools.Log("s: " + this.sirina);
@@ -97,6 +98,9 @@ function Mapa(filePath) {
         var soncePos = new BABYLON.Mesh.CreateBox("soncePos", 2, scene);
         soncePos.position = new BABYLON.Vector3(sonX, sonY, sonZ);
         var sonce = new BABYLON.PointLight("sonce", new BABYLON.Vector3(sonX, sonY, sonZ), scene);
+
+        map_init = true;
+
     }
 
     this.loadFile = function () {
