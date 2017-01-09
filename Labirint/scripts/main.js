@@ -22,6 +22,7 @@ var check_e = false;
 var end = false;
 var map_init = false;
 var map_parse = false;
+var music;
 
 
 var selectedmap = "./mape/mapa1.txt";
@@ -41,6 +42,8 @@ var violet = "#961eff";
 var main_menu_img = document.getElementById("menu_main");
 var key_img = document.getElementById("key_texture");
 
+
+
 //2D canvas init
 menucanvas = document.getElementById('menuCanvas');
 var context = menucanvas.getContext('2d');
@@ -59,6 +62,9 @@ menucanvas.height = window.innerHeight;
 
 var w_unit = menucanvas.width /10;
 var h_unit = menucanvas.height /10;
+
+var ready;
+document.addEventListener("DOMContentLoaded", ready = true, false);
 
 mainMenu();
 
@@ -86,7 +92,7 @@ function mainMenu() {
 
 
 //startBabylonJS();
-//document.addEventListener("DOMContentLoaded", startBabylonJS, false);
+
 function startBabylonJS() {
     if (BABYLON.Engine.isSupported()) {
         var time = 0;
@@ -148,8 +154,15 @@ function startBabylonJS() {
         setInterval(function () {
             time+=0.1;
         }, 100);
+
+        //SOUNDS
+        music = new BABYLON.Sound("Music", "sounds/ambient.wav", scene, null, { loop: true, autoplay: true });
+        var door_sound = new BABYLON.Sound("DoorSound", "sounds/creaky_door_4.wav", scene,
+             function () {
+                 // Sound has been downloaded & decoded
+             }
+            );
         
-        var lasttime;
 
         //RENDER-LOOP -----------------------------------------------------------------------------------------
         // Once the scene is loaded, just register a render loop to render it
@@ -168,6 +181,7 @@ function startBabylonJS() {
                         usedkey = true;
                         haskey = false;
                         BABYLON.Tools.Log("aaaaaand Opeeeen");;
+                        door_sound.play();
                     }
                 }
                 check_e = false;
@@ -178,7 +192,7 @@ function startBabylonJS() {
             }
 
             if (usedkey && map.door.mesh.position.y > -3) {
-                map.door.mesh.position.y -= 0.1;
+                map.door.mesh.position.y -= 0.05;
             }
 
 
@@ -217,6 +231,7 @@ function startBabylonJS() {
                 var player_co = getCameraXZ();
                 if (player_co[0] == map.end.posX && player_co[1] == map.end.posY) {
                     BABYLON.Tools.Log("KONEC");
+                    music.stop();
                     end = true;
                     engine.stopRenderLoop();
                     context2.clearRect(0, 0, canvas.width, canvas.height);
@@ -261,7 +276,9 @@ document.addEventListener("click", function (evt) {
                 }
                 else if (y > 7 * h_unit && y < 8 * h_unit) { //Play
                     BABYLON.Tools.Log("play");
-                    startBabylonJS();
+                    if (ready) {
+                        startBabylonJS();
+                    }
                 }
             } else if (x > 7 * w_unit && x < menucanvas.width) { //Possible secondary (right) bar
                 if (y > 7 * h_unit && y < 8 * h_unit) { //Scores
@@ -299,6 +316,7 @@ function handleKeyDown(evt) {
         BABYLON.Tools.Log("ESC detected");
         if (!menu) {
             engine.stopRenderLoop();
+            music.stop();
             mainMenu();
         }
 
