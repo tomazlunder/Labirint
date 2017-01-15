@@ -24,6 +24,7 @@ var map_init = false;
 var map_parse = false;
 var music;
 var key_laugh;
+var zilla;
 
 
 var selectedmap = "./mape/mapa1.txt";
@@ -170,13 +171,50 @@ function startBabylonJS() {
             );
         key_laugh = new BABYLON.Sound("Haha", "sounds/laugh.wav", scene, null, { loop: true, autoplay: true });
         key_laugh.setVolume(0);
+
+        //Enemy
+        engine.enableOfflineSupport = false;
+        //zilla = new Zilla();
+        //zilla.loadMesh();
+        //console.log(zilla);
+        // console.log(zilla.getLoaded());
+        var juhu = new Juhu();
+
+        var enem;
+        engine.displayLoadingUI();
+        BABYLON.SceneLoader.ImportMesh("", "zilla/", "zilla.babylon", scene, function (newMeshes, particleSystems, skeletons) {
+            zilla = newMeshes[0];
+                //console.log(m);
+            //zilla.isVisible = true;
+
+            zilla.position.x = 40;
+            zilla.position.y = -10;
+            zilla.position.z = 20;
+                //zilla.rotation.z = 0.5;
+            zilla.rotation.x = 0.0;
+            zilla.rotation.y = 1;
+            zilla.applyGravity = true;
+            //this.mesh.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5);
+            enemy.loaded = false;
+            console.log("blablabla")
+            BABYLON.Tools.Log("bleble")
+            console.log(skeletons[0])
+            scene.beginAnimation(skeletons[0], 0, 100, true)
+            BABYLON.Tools.Log("blublu")
+            tmpLoaded = true;
+            enem = zilla;
+            engine.hideLoadingUI();
+        });
         
 
         //RENDER-LOOP -----------------------------------------------------------------------------------------
         // Once the scene is loaded, just register a render loop to render it
         var wait = 100;
         engine.runRenderLoop(function () {
+           // console.log(tmpLoaded,zilla, zilla.loaded)
+            //zilla.move();
             //IZRIS OVERLAYA
+            //enem.position.x += 0.1;
             context2.clearRect(0, 0, canvas.width, canvas.height);
             context2.fillText("TIME:", 30, 20);
             context2.fillText(Math.round(time).toString(), 80, 20);
@@ -261,6 +299,28 @@ function startBabylonJS() {
                     context2.fillText(Math.round(time).toString() + "s", 150, 40);
                     context2.fillText("Click ESC two times", 30, 60);
 
+                }
+
+                var camPOS = getCameraXZ();
+                var camX = camPOS[0];
+                var camZ = camPOS[1];
+                var stevc = 0
+                for (kovanc in map.kovanci) {
+                    map.kovanci[kovanc].rotate();
+                    if (map.kovanci[kovanc].posX == camX && map.kovanci[kovanc].posY == camZ) {
+                        console.log('ja')
+                        juhu.fountain.position.x = map.kovanci[kovanc].mesh.position.x;
+                        juhu.fountain.position.z = map.kovanci[kovanc].mesh.position.z;
+                        juhu.fountain.position.y = 3;
+                        //juhu.fountain.position.y = map.kovanci[kovanc].mesh.position.y;
+                        map.kovanci[kovanc].mesh.position.y = -10;
+                        stevc = 1000;
+                        
+                    } else if(stevc<0) {
+                        juhu.fountain.position.y = 30;
+                    } else {
+                        stevc--;
+                    }
                 }
             }
         });

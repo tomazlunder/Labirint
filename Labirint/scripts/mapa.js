@@ -11,6 +11,7 @@ function Mapa(filePath) {
     this.end;
     this.door = null;
     this.key = null;
+    this.kovanci = [];
 
     loadFileX = function() {
         this.reader.open('GET', this.txt);
@@ -37,6 +38,11 @@ function Mapa(filePath) {
                     this.key = [el, l];
                 } else {
                     gradnik = new Gradnik(parseInt(line[el]), el, l);
+                    if (parseInt(line[el]) == 0 && Math.random()<0.3) {
+                        kovanc = new Kovanc(parseInt(line[el]), el, l);
+                        this.kovanci.push(kovanc);
+                    }
+                    
                     if (parseInt(line[el]) == 3) {
                         this.startpoint = new BABYLON.Vector3((3 / 2) + (el * 3), 3, (3 / 2) + (l * 3));
                         camera.position = this.startpoint;
